@@ -132,19 +132,26 @@ namespace WordStats
 				double totalFourLettersWeightProbability = 0.0;
 				double totalPositionalWeightProbability = 0.0;
 
-				char previousLetter = '!'; // We're going to break the table up by letter, since it's kinda large
+				double leastAllWordsWeightProbability = Double.MaxValue;
+				string leastLikelyAllWordsWord = string.Empty;
+				double mostAllWordsWeightProbability = Double.MinValue;
+				string mostLikelyAllWordsWord = string.Empty;
+
+				double leastFourWordsWeightProbability = Double.MaxValue;
+				string leastLikelyFourWordsWord = string.Empty;
+				double mostFourWordsWeightProbability = Double.MinValue;
+				string mostLikelyFourWordsWord = string.Empty;
+
+				double leastPositionalWordsWeightProbability = Double.MaxValue;
+				string leastLikelyPositionalWordsWord = string.Empty;
+				double mostPositionalWordsWeightProbability = Double.MinValue;
+				string mostLikelyPositionalWordsWord = string.Empty;
 
 				sw.WriteLine(" <h2>Four letter words probability:</h2>");
+				sw.WriteLine("   <table border='1' cellspacing='0' cellpadding='2'>");
+				sw.WriteLine("     <tr><th>word</th><th>Equal Weight</th><th>All words weighted probability</th><th>Four letter words weighted probability</th><th>Four letter words positionally weighted probability</th></tr>");
 				foreach (var word in fourLetterWordList)
 				{
-					if (word.First() != previousLetter)
-					{
-						if (previousLetter != '!')
-							sw.WriteLine("   </table>");
-						sw.WriteLine("   <table border='1' cellspacing='0' cellpadding='2'>");
-						sw.WriteLine("     <tr><th>word</th><th>Equal Weight</th><th>All words weighted probability</th><th>Four letter words weighted probability</th><th>Four letter words positionally weighted probability</th></tr>");
-						previousLetter = word.First();
-					}
 					double allWordsProbability = 1.0;
 					double fourLetterWordsProbability = 1.0;
 					double positionalProbability = 1.0;
@@ -167,6 +174,40 @@ namespace WordStats
 					totalFourLettersWeightProbability += fourLetterWordsProbability;
 					totalPositionalWeightProbability += positionalProbability;
 
+					// Keep track of our most likely and least likely words
+					if (allWordsProbability < leastAllWordsWeightProbability)
+					{
+						leastAllWordsWeightProbability = allWordsProbability;
+						leastLikelyAllWordsWord = word;
+					}
+					if (allWordsProbability > mostAllWordsWeightProbability)
+					{
+						mostAllWordsWeightProbability = allWordsProbability;
+						mostLikelyAllWordsWord = word;
+					}
+
+					if (fourLetterWordsProbability < leastFourWordsWeightProbability)
+					{
+						leastFourWordsWeightProbability = fourLetterWordsProbability;
+						leastLikelyFourWordsWord = word;
+					}
+					if (fourLetterWordsProbability > mostFourWordsWeightProbability)
+					{
+						mostFourWordsWeightProbability = fourLetterWordsProbability;
+						mostLikelyFourWordsWord = word;
+					}
+
+					if (positionalProbability < leastPositionalWordsWeightProbability)
+					{
+						leastPositionalWordsWeightProbability = positionalProbability;
+						leastLikelyPositionalWordsWord = word;
+					}
+					if (positionalProbability > mostPositionalWordsWeightProbability)
+					{
+						mostPositionalWordsWeightProbability = positionalProbability;
+						mostLikelyPositionalWordsWord = word;
+					}
+
 					sw.Write($"     <tr><td>{word}</td>");
 					sw.Write($"<td>{wordEqualWeight:E3}</td>");
 					sw.Write($"<td>{allWordsProbability:E3}</td>");
@@ -181,6 +222,21 @@ namespace WordStats
 				sw.Write($"<td>{totalFourLettersWeightProbability:0.000%}</td>");
 				sw.Write($"<td>{totalPositionalWeightProbability:0.000%}</td>");
 				sw.WriteLine("</tr>");
+
+				sw.Write($"     <tr><td><b>Most likely word: </b></td>");
+				sw.Write($"<td>&nbsp;</td>");
+				sw.Write($"<td>{mostLikelyAllWordsWord}</td>");
+				sw.Write($"<td>{mostLikelyFourWordsWord}</td>");
+				sw.Write($"<td>{mostLikelyPositionalWordsWord}</td>");
+				sw.WriteLine("</tr>");
+
+				sw.Write($"     <tr><td><b>Least likely word: </b></td>");
+				sw.Write($"<td>&nbsp;</td>");
+				sw.Write($"<td>{leastLikelyAllWordsWord}</td>");
+				sw.Write($"<td>{leastLikelyFourWordsWord}</td>");
+				sw.Write($"<td>{leastLikelyPositionalWordsWord}</td>");
+				sw.WriteLine("</tr>");
+
 				sw.WriteLine("   </table>");
 
 
